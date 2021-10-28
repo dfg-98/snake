@@ -133,6 +133,7 @@ queue_t *create_queue()
     return queue;
 }
 
+
 void enqueue(queue_t *queue, node_t *node)
 {
     if (queue->count == 0)
@@ -154,6 +155,7 @@ node_t *dequeue(queue_t *queue)
     if (queue->count == 0)
     {
         printf("Queue is empty\n");
+        return NULL;
     }
     else
     {
@@ -164,8 +166,18 @@ node_t *dequeue(queue_t *queue)
     }
 }
 
+void destroy_queue(queue_t * q)
+{
+    while(q->count > 0)
+    {
+        node_t *c = dequeue(q);
+        free(c);
+    }
+    free(q);
+}
 
-queue_t *bfs(board_t *board, int x_orig, int y_orig, int x_dest, int y_dest)
+
+stack_t bfs(board_t *board, int x_orig, int y_orig, int x_dest, int y_dest)
 {
     bool visited[board->width][board->height];
     for (int i = 0; i < board->width; i++)
@@ -183,6 +195,7 @@ queue_t *bfs(board_t *board, int x_orig, int y_orig, int x_dest, int y_dest)
     node_orig->x = x_orig;
     node_orig->y = y_orig;
     node_orig->d = 0;
+    node_orig->parent = NULL;
     visited[x_orig][y_orig] = true;
     enqueue(to_proccess, node_orig);
 
@@ -192,7 +205,17 @@ queue_t *bfs(board_t *board, int x_orig, int y_orig, int x_dest, int y_dest)
 
         if (get_cell_state(board, node->x, node->y) == FOOD ) {
             // reverse node tree
+            node_t *current = node;
+            stack_t path;
+            path.count = 0;
+            path.top = NULL;
+            while (current->parent != NULL)
+            {
+                push(&path, current);
+                current = current->parent;
+            }
             
+            return path;
         }
 
         point_t possible_moves[4];
@@ -212,4 +235,5 @@ queue_t *bfs(board_t *board, int x_orig, int y_orig, int x_dest, int y_dest)
             }
         }
     }
+    return (stack_t){};
 }
