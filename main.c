@@ -18,6 +18,18 @@ bool IS_ON_TRACK = false;
 
 void spawn_fruits(board_t *board)
 {
+    if (FRUITS_LEFT == get_free_cells(board))
+    {
+        for (int i = 0; i < board->width * board->height; i++)
+        {
+            if (board->cells[i] == EMPTY)
+            {
+                board->cells[i] = FOOD;
+                break;
+            }
+        }
+        return ;
+    }
     int i;
     for (i = 0; i < FRUITS_LEFT; i++)
     {
@@ -61,7 +73,6 @@ int main(int argc, char const *argv[])
     board = create_board(width, height);
     snake = snake_create(board->width / 2, board->height / 2, board);
     spawn_fruits(board);
-
 
     // Set Moving Constants
     if (is_even(width))
@@ -108,10 +119,13 @@ int main(int argc, char const *argv[])
         if (FRUITS_LEFT == 0)
         {
             FRUITS_LEFT = 5;
+            printf("free cells %d \n", get_free_cells(board));
             if (get_free_cells(board) < 5)
             {
                 FRUITS_LEFT = get_free_cells(board);
             }
+
+            spawn_fruits(board);
         }
         print_board(board);
         printf("\n");
@@ -125,45 +139,13 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
-
 point_t compute_next_move(board_t *board, snake_t *snake)
 {
     int x = snake->head->x;
     int y = snake->head->y;
     // UP RIGHT DOWN LEFT
     point_t possible_move[4];
-    if (y > 0 && is_free_cell(board, x, y - 1))
-    {
-        possible_move[0] = create_point(x, y - 1);
-    }
-    else
-    {
-        possible_move[0] = create_point(-1, -1);
-    }
-    if (x < board->width - 1 && is_free_cell(board, x + 1, y))
-    {
-        possible_move[1] = create_point(x + 1, y);
-    }
-    else
-    {
-        possible_move[1] = create_point(-1, -1);
-    }
-    if (y < board->height - 1 && is_free_cell(board, x, y + 1) )
-    {
-        possible_move[2] = create_point(x, y + 1);
-    }
-    else
-    {
-        possible_move[2] = create_point(-1, -1);
-    }
-    if (x > 0 && is_free_cell(board, x - 1, y))
-    {
-        possible_move[3] = create_point(x - 1, y);
-    }
-    else
-    {
-        possible_move[3] = create_point(-1, -1);
-    }
+    get_possible_moves(x, y, board, possible_move);
 
     int valids = 0;
     point_t last_valid;
@@ -185,46 +167,76 @@ point_t compute_next_move(board_t *board, snake_t *snake)
         return last_valid;
     }
 
-    if (MOVE_ON_WIDTH)
+    if (EVEN_DIM)
     {
-        if (is_even(y))
+
+        if (MOVE_ON_WIDTH)
         {
-            if (x == board->width - 1)
+            if (is_even(y))
             {
-                if (y == board->height - 1)
+                if (x == 0)
                 {
+                    if (y == 0)
+                    {
+                        return create_point(x + 1, y);
+                    }
+                    return create_point(x, y - 1);
+                }
+                if (x > 0 && x < board->width - 1)
+                {
+                    return create_point(x + 1, y);
+                }
+                return create_point(x, y + 1);
+            }
+            else if (!is_even(y))
+            {
+                if (x == 0)
+                {
+                    return create_point(x, y - 1);
+                }
+                if ((x > 1) || (x == 1 && y == board->height - 1))
+                {
+                    return create_point(x - 1, y);
+                }
+                else if (x == 1)
+                {
+                    return create_point(x, y + 1);
                 }
             }
-            else if (y < board->height - 1 && get_cell_state(board, x, y + 1) == EMPTY)
-            {
-                return create_point(x, y + 1);
-            }
-            else if (x > 0 && get_cell_state(board, x - 1, y) == EMPTY)
-            {
-                return create_point(x - 1, y);
-            }
-            else if (y > 0 && get_cell_state(board, x, y - 1) == EMPTY)
-            {
-                return create_point(x, y - 1);
-            }
         }
+
         else
         {
-            if (y < board->height - 1 && get_cell_state(board, x, y + 1) == EMPTY)
+            if (is_even(x))
             {
-                return create_point(x, y + 1);
-            }
-            else if (x > 0 && get_cell_state(board, x - 1, y) == EMPTY)
-            {
-                return create_point(x - 1, y);
-            }
-            else if (y > 0 && get_cell_state(board, x, y - 1) == EMPTY)
-            {
-                return create_point(x, y - 1);
-            }
-            else if (x < board->width - 1 && get_cell_state(board, x + 1, y) == EMPTY)
-            {
+                if (y == 0)
+                {
+                    if (x == 0)
+                    {
+                        return create_point(x, y + 1);
+                    }
+                    return create_point(x - 1, y);
+                }
+                if (y > 0 && y < board->height - 1)
+                {
+                    return create_point(x, y + 1);
+                }
                 return create_point(x + 1, y);
+            }
+            else if (!is_even(x))
+            {
+                if (y == 0)
+                {
+                    return create_point(x - 1, y);
+                }
+                if ((y > 1) || (y == 1 && x == board->width - 1))
+                {
+                    return create_point(x, y - 1);
+                }
+                else if (y == 1)
+                {
+                    return create_point(x + 1, y);
+                }
             }
         }
     }
