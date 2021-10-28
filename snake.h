@@ -29,4 +29,5 @@ void destroy_snake(snake_t *snake, board_t *board);
 // Move snake
 void snake_move(snake_t *snake, int x, int y, board_t *board, bool growing);
 
+
 #endif

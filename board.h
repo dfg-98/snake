@@ -1,6 +1,7 @@
 #ifndef __BOARD_H__
 #define __BOARD_H__
 
+#include <stdbool.h>
 typedef enum
 {
     EMPTY,
@@ -31,5 +32,7 @@ void set_cell_state(board_t *b, int x, int y, cell_state state);
 
 // returns free cells in the board_t
 int get_free_cells(board_t *b);
+
+bool is_free_cell(board_t *b, int x, int y);
 
 #endif

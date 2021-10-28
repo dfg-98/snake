@@ -72,3 +72,8 @@ void print_board(board_t *b)
         printf("\n");
     }
 }
+
+bool is_free_cell(board_t *b, int x, int y)
+{
+    return get_cell_state(b, x, y) == EMPTY || get_cell_state(b, x, y) == FOOD;
+}
