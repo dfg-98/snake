@@ -5,6 +5,9 @@
 #include "board.h"
 #include "snake.h"
 #include "utils.h"
+#include "bfs.h"
+#include "queue.h"
+#include "stack.h"
 
 int FRUITS_LEFT = 5;
 int GROWING = 0;
@@ -15,6 +18,7 @@ snake_t *snake;
 bool EVEN_DIM;
 bool MOVE_ON_WIDTH;
 bool IS_ON_TRACK = false;
+stack_t MOVEMENT_STACK = {0, NULL};
 
 void spawn_fruits(board_t *board)
 {
@@ -102,6 +106,7 @@ int main(int argc, char const *argv[])
     while (true)
     {
         point_t next_move = compute_next_move(board, snake);
+
         if (is_invalid_point(next_move))
         {
             break;
@@ -241,12 +246,10 @@ point_t compute_next_move(board_t *board, snake_t *snake)
         }
     }
 
-    while (true)
-    {
-        int random = rand() % 4;
-        if (!is_invalid_point(possible_move[random]))
-        {
-            return possible_move[random];
-        }
+    if(MOVEMENT_STACK.count == 0){
+        MOVEMENT_STACK = bfs(board, snake->head->x, snake->head->y);
     }
+
+    return pop(&MOVEMENT_STACK);
+
 }

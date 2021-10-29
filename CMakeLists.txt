@@ -12,9 +12,16 @@ add_executable(snake main.c
                     typedef.c
                     board.h
                     board.c
+                    queue.c
+                    stack.h
+                    stack.c
+                    bfs.h
+                    bfs.c
                     snake.h
                     snake.c
-                    utils.h )
+                    utils.h
+                    utils.c
+                    )
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

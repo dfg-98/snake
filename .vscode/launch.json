@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/snake",
-            "args": ["8", "8"],
+            "args": ["7", "9"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
