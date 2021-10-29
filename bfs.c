@@ -34,7 +34,7 @@ stack_t bfs(board_t *board, int x, int y){
             stack_t path;
             path.count = 0;
             path.top = NULL;
-            while (current->parent != NULL) {
+            while (current->parent != NULL && !(current->x == x && current->y == y) ) {
                 push(&path, (point_t){current->x, current->y} );
                 current = current->parent;
             }
@@ -59,5 +59,5 @@ stack_t bfs(board_t *board, int x, int y){
         }
         
     }
-    
+    return (stack_t){0, NULL};
 }

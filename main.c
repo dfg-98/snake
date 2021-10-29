@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <unistd.h>
 #include "typedef.h"
 #include "board.h"
 #include "snake.h"
@@ -17,7 +17,6 @@ snake_t *snake;
 
 bool EVEN_DIM;
 bool MOVE_ON_WIDTH;
-bool IS_ON_TRACK = false;
 stack_t MOVEMENT_STACK = {0, NULL};
 
 void spawn_fruits(board_t *board)
@@ -32,7 +31,7 @@ void spawn_fruits(board_t *board)
                 break;
             }
         }
-        return ;
+        return;
     }
     int i;
     for (i = 0; i < FRUITS_LEFT; i++)
@@ -69,6 +68,7 @@ point_t compute_next_move(board_t *board, snake_t *snake);
 
 int main(int argc, char const *argv[])
 {
+    srand((unsigned)time(NULL));
     int width = atoi(argv[1]);
     int height = atoi(argv[2]);
     // int width = 6;
@@ -99,12 +99,14 @@ int main(int argc, char const *argv[])
         EVEN_DIM = false;
         MOVE_ON_WIDTH = true;
     }
-    // Check if is on track
-    // IS_ON_TRACK = is_on_track(snake->x, snake->y);
+    system("clear");
     print_board(board);
+    printf("\nPuntuacion: %d", snake->length - 3);
+    printf("\n");
     // Main Loop
     while (true)
     {
+        sleep(1);
         point_t next_move = compute_next_move(board, snake);
 
         if (is_invalid_point(next_move))
@@ -124,7 +126,7 @@ int main(int argc, char const *argv[])
         if (FRUITS_LEFT == 0)
         {
             FRUITS_LEFT = 5;
-            printf("free cells %d \n", get_free_cells(board));
+            // printf("free cells %d \n", get_free_cells(board));
             if (get_free_cells(board) < 5)
             {
                 FRUITS_LEFT = get_free_cells(board);
@@ -132,10 +134,10 @@ int main(int argc, char const *argv[])
 
             spawn_fruits(board);
         }
+        system("clear");
         print_board(board);
+        printf("\nPuntuacion: %d", snake->length - 3);
         printf("\n");
-        char a;
-        scanf("%c", &a);
     }
 
     destroy_snake(snake, board);
@@ -160,7 +162,6 @@ point_t compute_next_move(board_t *board, snake_t *snake)
         {
             valids++;
             last_valid = possible_move[i];
-            printf("Valid point: (%d, %d) \n", possible_move[i].x, possible_move[i].y);
         }
     }
     if (valids == 0)
@@ -246,10 +247,14 @@ point_t compute_next_move(board_t *board, snake_t *snake)
         }
     }
 
-    if(MOVEMENT_STACK.count == 0){
+    if (MOVEMENT_STACK.count == 0)
+    {
         MOVEMENT_STACK = bfs(board, snake->head->x, snake->head->y);
+    }
+    if (MOVEMENT_STACK.count == 0)
+    {
+        return last_valid;
     }
 
     return pop(&MOVEMENT_STACK);
-
 }

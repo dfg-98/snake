@@ -11,6 +11,7 @@ snake_t *snake_create(int x, int y, board_t *board)
     snake->head = malloc(sizeof(snake_segment_t));
     snake->head->x = x;
     snake->head->y = y;
+    snake->length = 3;
     set_cell_state(board, x, y, SNAKE_HEAD);
     snake_segment_t *current_segment = snake->head;
     for (uint i = 1; i < 3; i++)
@@ -53,6 +54,7 @@ void snake_move(snake_t *snake, int x, int y, board_t *board, bool growing)
     new_segment->next = snake->head;
     snake->head = new_segment;
     set_cell_state(board, x, y, SNAKE_HEAD);
+    snake->length ++;
 
     // If the snake is growing, don't remove the tail
     if (!growing)
@@ -66,5 +68,6 @@ void snake_move(snake_t *snake, int x, int y, board_t *board, bool growing)
         set_cell_state(board, current_segment->next->x, current_segment->next->y, EMPTY);
         free(current_segment->next);
         current_segment->next = NULL;
+        snake->length --;
     }
 }
