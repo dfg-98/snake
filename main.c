@@ -249,12 +249,32 @@ point_t compute_next_move(board_t *board, snake_t *snake)
 
     if (MOVEMENT_STACK.count == 0)
     {
+        while (MOVEMENT_STACK.top != NULL)
+        {
+            pop(&MOVEMENT_STACK);
+        }
         MOVEMENT_STACK = bfs(board, snake->head->x, snake->head->y);
     }
     if (MOVEMENT_STACK.count == 0)
     {
         return last_valid;
     }
-
-    return pop(&MOVEMENT_STACK);
+    point_t next_move = pop(&MOVEMENT_STACK);
+    bool is_valid_next = false;
+    for (int i = 0; i < 4; i++)
+    {
+        if (possible_move[i].x == next_move.x && possible_move[i].y == next_move.y)
+        {
+            is_valid_next = true;
+        }
+    }
+    if (is_valid_next)
+    {
+        return next_move;
+    }
+    while (MOVEMENT_STACK.top != NULL)
+    {
+        pop(&MOVEMENT_STACK);
+    }
+    return last_valid;
 }
